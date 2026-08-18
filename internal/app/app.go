@@ -173,7 +173,9 @@ func (a *App) Replay(forwardID string) (string, error) {
 		return "", os.ErrNotExist
 	}
 	j, err := replay.FromJournal(e, now)
-	_ = err
+	if err != nil {
+		return "", err
+	}
 	d, ok := a.Radars.Get(j.RadarID)
 	if !ok {
 		return "", os.ErrNotExist
