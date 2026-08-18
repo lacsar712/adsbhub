@@ -50,7 +50,7 @@ func (s *Store) Remember(key, bodyHash, reportID string) (existingReportID strin
 	now := s.clk.Now()
 	if ok && rec.ExpiresAt.After(now) {
 		if rec.BodyHash != bodyHash {
-			return "", false, fmt.Errorf("%w: key=%s", ErrConflict, key)
+			return "", false, fmt.Errorf("%v: key=%s", ErrConflict, key)
 		}
 		return rec.ReportID, true, nil
 	}
