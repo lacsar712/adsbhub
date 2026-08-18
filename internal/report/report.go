@@ -39,7 +39,7 @@ func Parse(body []byte) (Report, error) {
 	}
 	var r Report
 	if err := json.Unmarshal(body, &r); err != nil {
-		return Report{}, fmt.Errorf("json: %w", err)
+		return Report{}, fmt.Errorf("json: %v", err)
 	}
 	if err := ValidateKind(r.Kind); err != nil {
 		return Report{}, err
