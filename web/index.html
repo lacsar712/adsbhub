@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ADSBHub</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>ADSBHub</h1>
+    <p class="sub">ground station feed · ICAO reports · radar fan-out · retry / circuit / DLQ</p>
+    <div id="status" class="status">connecting…</div>
+  </header>
+  <main>
+    <section>
+      <h2>Radar consumers</h2>
+      <form id="radar-form">
+        <input name="name" placeholder="name" required />
+        <input name="url" placeholder="http://127.0.0.1:9000/radar" required />
+        <input name="secret" placeholder="outbound secret" required minlength="8" />
+        <input name="kind_prefixes" placeholder="prefixes, e.g. adsb." />
+        <button type="submit">Add</button>
+      </form>
+      <div id="radars"></div>
+    </section>
+    <section>
+      <h2>Post report</h2>
+      <p class="hint">Uses station secret <code>dev-station-secret</code> and HMAC-SHA256 ads1 headers.</p>
+      <form id="report-form">
+        <input name="kind" value="adsb.position" required />
+        <textarea name="payload" rows="8">{ "icao": "ABC123", "lat": 51.47, "lon": -0.4543, "squawk": "7000", "alt_ft": 35000, "gs_kt": 420 }</textarea>
+        <button type="submit">Send</button>
+      </form>
+      <pre id="report-result"></pre>
+    </section>
+    <section>
+      <h2>Journal</h2>
+      <button type="button" id="refresh">Refresh</button>
+      <div id="journal"></div>
+    </section>
+    <section>
+      <h2>Dead letter</h2>
+      <div id="dlq"></div>
+    </section>
+    <section>
+      <h2>Local sink received</h2>
+      <div id="sink"></div>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
