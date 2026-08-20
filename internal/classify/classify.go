@@ -1,6 +1,7 @@
 package classify
 
 import (
+	"context"
 	"errors"
 	"net"
 	"net/url"
@@ -65,6 +66,11 @@ func NetError(err error) Kind {
 			return Retryable
 		}
 		err = ue.Err
+	}
+	// A cancelled request (shutdown or operator abort of an in-flight
+	// forward) is not a radar failure; retry it rather than dead-lettering.
+	if errors.Is(err, context.Canceled) {
+		return Retryable
 	}
 	if errors.Is(err, syscall.ECONNREFUSED) ||
 		errors.Is(err, syscall.ECONNRESET) ||

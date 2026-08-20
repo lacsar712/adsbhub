@@ -1,6 +1,7 @@
 package classify_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -51,5 +52,12 @@ func TestNetErrorTimeoutUnwraps(t *testing.T) {
 	err := fmt.Errorf("feeder post: %w", timeoutErr{})
 	if got := classify.NetError(err); got != classify.Retryable {
 		t.Fatalf("wrapped timeout: got %s want retryable", got)
+	}
+}
+
+func TestNetErrorCanceledIsRetryable(t *testing.T) {
+	err := fmt.Errorf("feeder post: %w", context.Canceled)
+	if got := classify.NetError(err); got != classify.Retryable {
+		t.Fatalf("cancelled request: got %s want retryable", got)
 	}
 }
