@@ -3,7 +3,6 @@ package accept
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
