@@ -2,6 +2,7 @@ package classify
 
 import (
 	"errors"
+	"net"
 	"os"
 	"syscall"
 )
@@ -55,6 +56,10 @@ func NetError(err error) Kind {
 		errors.Is(err, syscall.ECONNRESET) ||
 		errors.Is(err, syscall.EPIPE) ||
 		errors.Is(err, os.ErrDeadlineExceeded) {
+		return Retryable
+	}
+	var netErr net.Error
+	if errors.As(err, &netErr) && netErr.Timeout() {
 		return Retryable
 	}
 	return Terminal
