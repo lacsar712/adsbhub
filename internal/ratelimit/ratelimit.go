@@ -36,7 +36,30 @@ func New(clk clock.Clock, ratePerSec float64, burst int) *Bucket {
 }
 
 func (b *Bucket) Take() (wait time.Duration) {
-	return 0
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	now := b.clk.Now()
+	elapsed := now.Sub(b.lastTime)
+	if elapsed < 0 {
+		elapsed = 0
+	}
+	b.lastTime = now
+	b.tokens += elapsed.Seconds() * b.rate
+	if b.tokens > b.burst {
+		b.tokens = b.burst
+	}
+	if b.tokens >= 1 {
+		b.tokens -= 1
+		return 0
+	}
+	// No token available. Return how long the caller should wait for the
+	// next token without consuming one, so that a retry after waiting
+	// succeeds rather than double-charging a reservation.
+	if b.rate <= 0 {
+		return 0
+	}
+	needed := 1 - b.tokens
+	return time.Duration(needed / b.rate * float64(time.Second))
 }
 
 type Snapshot struct {
